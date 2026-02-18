@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Pro - Business Management System</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="swapnil.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-receipt"></i> Invoice Pro</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-chart-line"></i>Dashboard</a>
+                </li>
+                <li><a href="#" class="nav-link" data-page="invoices"><i class="fas fa-file-invoice"></i> Invoices</a>
+                </li>
+                <li><a href="#" class="nav-link" data-page="quotations"><i class="fas fa-quote-left"></i> Quotations</a>
+                </li>
+                <li><a href="#" class="nav-link" data-page="customers"><i class="fas fa-users"></i> Customers</a></li>
+                <li><a href="#" class="nav-link" data-page="stock"><i class="fas fa-boxes"></i> Stock Management</a>
+                </li>
+                <li><a href="#" class="nav-link" data-page="reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+            </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-success" onclick="app.showInvoiceModal()">
+                        <i class="fas fa-plus"></i> New Invoice
+                    </button>
+                </div>
+            </header>
+
+            <div id="dashboard" class="page active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-revenue">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-invoices">0</h3>
+                            <p>Total Invoices</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-customers">0</h3>
+                            <p>Total Customers</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="pending-amount">₹0</h3>
+                            <p>Pending Amount</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Recent Invoices</h3>
+                        <div class="table-container">
+                            <table id="recent-invoices-table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6" class="no-data">No invoices found</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>Low Stock Alert</h3>
+                        <div class="table-container">
+                            <table id="low-stock-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Current Stock</th>
+                                        <th>Min Stock</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4" class="no-data">All products are in stock</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>Quick Actions</h3>
+                        <div class="quick-actions">
+                            <button class="action-card" onclick="app.showInvoiceModal()">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>New Invoice</span>
+                            </button>
+                            <button class="action-card" onclick="app.showQuotationModal()">
+                                <i class="fas fa-quote-left"></i>
+                                <span>New Quotation</span>
+                            </button>
+                            <button class="action-card" onclick="app.showCustomerModal()">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Add Customer</span>
+                            </button>
+                            <button class="action-card" onclick="app.showProductModal()">
+                                <i class="fas fa-box"></i>
+                                <span>Add Product</span>
+                            </button>
+                            <button class="action-card" onclick="app.showCustomerSelectionForStatement()">
+                                <i class="fas fa-list-alt"></i>
+                                <span>View Statement</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="invoices" class="page">
+                <div class="page-header">
+                    <div class="page-actions">
+                        <button class="btn btn-primary" onclick="app.showInvoiceModal()">
+                            <i class="fas fa-plus"></i> New Invoice
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <input type="text" id="invoice-search" placeholder="Search invoices..." class="search-input">
+                    <select id="invoice-status-filter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="invoices-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="quotations" class="page">
+                <div class="page-header">
+                    <div class="page-actions">
+                        <button class="btn btn-primary" onclick="app.showQuotationModal()">
+                            <i class="fas fa-plus"></i> New Quotation
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="quotations-table">
+                        <thead>
+                            <tr>
+                                <th>Quote #</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Valid Until</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="customers" class="page">
+                <div class="page-header">
+                    <div class="page-actions">
+                        <button class="btn btn-primary" onclick="app.showCustomerModal()">
+                            <i class="fas fa-plus"></i> Add Customer
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <input type="text" id="customer-search" placeholder="Search customers..." class="search-input">
+                </div>
+                <div class="table-container">
+                    <table id="customers-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Total Orders</th>
+                                <th>Total Amount</th>
+                                <th>बकाया उधार (Credit)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="stock" class="page">
+                <div class="page-header">
+                    <div class="page-actions">
+                        <button class="btn btn-primary" onclick="app.showProductModal()">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <input type="text" id="product-search" placeholder="Search products..." class="search-input">
+                    <select id="product-category-filter" class="filter-select">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="products-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>SKU</th>
+                                <th>Current Stock</th>
+                                <th>Min Stock</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="reports" class="page">
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <h3>Sales Summary</h3>
+                        <div class="report-stats">
+                            <div class="report-item">
+                                <span class="label">Total Sales:</span>
+                                <span class="value" id="report-total-sales">₹0</span>
+                            </div>
+                            <div class="report-item">
+                                <span class="label">Total Invoices:</span>
+                                <span class="value" id="report-total-invoices">0</span>
+                            </div>
+                            <div class="report-item">
+                                <span class="label">Average Order:</span>
+                                <span class="value" id="report-average-order">₹0</span>
+                            </div>
+                            <div class="report-item">
+                                <span class="label">Paid Invoices:</span>
+                                <span class="value" id="report-paid-invoices">0</span>
+                            </div>
+                            <div class="report-item">
+                                <span class="label">Pending Invoices:</span>
+                                <span class="value" id="report-pending-invoices">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>Customer Summary</h3>
+                        <div class="report-stats">
+                            <div class="report-item">
+                                <span class="label">Total Customers:</span>
+                                <span class="value" id="report-total-customers">0</span>
+                            </div>
+                            <div class="report-item">
+                                <span class="label">Active Customers:</span>
+                                <span class="value" id="report-active-customers">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-card" style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Customer Statement Summary</h3>
+                            <button class="btn btn-sm btn-secondary" onclick="app.printStatementSummary()">
+                                <i class="fas fa-print"></i> Print Summary
+                            </button>
+                        </div>
+                        <div class="table-container scrollable-table" id="statement-summary-container">
+                            <table id="statement-summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer Name</th>
+                                        <th>Total Sales (Debit)</th>
+                                        <th>Total Received (Credit)</th>
+                                        <th>Outstanding Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="settings" class="page">
+                <div class="settings-container">
+                    <form id="settings-form" class="settings-form">
+                        <div class="form-section">
+                            <h3>Business Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="businessName">Business Name</label>
+                                    <input type="text" id="businessName" name="businessName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="businessPhone">Phone Number</label>
+                                    <input type="tel" id="businessPhone" name="businessPhone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="businessEmail">Email Address</label>
+                                    <input type="email" id="businessEmail" name="businessEmail">
+                                </div>
+                                <div class="form-group">
+                                    <label for="businessGst">GST Number</label>
+                                    <input type="text" id="businessGst" name="businessGst">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="businessAddress">Business Address</label>
+                                    <textarea id="businessAddress" name="businessAddress" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Invoice Settings</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="invoicePrefix">Invoice Prefix</label>
+                                    <input type="text" id="invoicePrefix" name="invoicePrefix" value="INV">
+                                </div>
+                                <div class="form-group">
+                                    <label for="quotationPrefix">Quotation Prefix</label>
+                                    <input type="text" id="quotationPrefix" name="quotationPrefix" value="QUO">
+                                </div>
+                                <div class="form-group">
+                                    <label for="defaultTax">Default Tax (%)</label>
+                                    <input type="number" id="defaultTax" name="defaultTax" value="18" min="0" max="100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="paymentTerms">Payment Terms (Days)</label>
+                                    <input type="number" id="paymentTerms" name="paymentTerms" value="30" min="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </form>
+
+                    <div class="settings-section">
+                        <h3>Data Management</h3>
+                        <div class="data-actions">
+                            <button class="btn btn-success" id="export-data">
+                                <i class="fas fa-download"></i> Export Data
+                            </button>
+                            <label for="import-data" class="btn btn-info">
+                                <i class="fas fa-upload"></i> Import Data
+                                <input type="file" id="import-data" accept=".json" style="display: none;">
+                            </label>
+                            <button class="btn btn-danger" id="reset-data">
+                                <i class="fas fa-trash"></i> Reset All Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="settings-section" style="margin-top: 30px;">
+                        <h3>Reset Protection</h3>
+                        <p style="font-size: 0.9rem; color: #7f8c8d; margin-bottom: 20px;">
+                            Set a password to prevent accidental data reset. If a password is set, it will be
+                            required to reset all data.
+                        </p>
+                        <div id="password-status" style="margin-bottom: 15px; font-weight: bold;">
+                        </div>
+                        <form onsubmit="event.preventDefault();">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="reset-password">New Password</label>
+                                    <input type="password" id="reset-password" placeholder="Enter a new password">
+                                </div>
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <button type="button" class="btn btn-primary" onclick="app.saveResetPassword()">
+                                            <i class="fas fa-save"></i> Set / Update Password
+                                        </button>
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="app.removeResetPassword()">
+                                            <i class="fas fa-trash"></i> Remove Password
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Modal Title</h3>
+                <button class="modal-close" onclick="app.closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+            </div>
+            <div class="modal-footer" id="modal-footer">
+            </div>
+        </div>
+    </div>
+
+    <div id="notifications" class="notifications"></div>
+
+    <script src="swapnil.js"></script>
+</body>
+
+</html>
